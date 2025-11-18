@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification - Lakastah Makan Cafe</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+
+</head>
+<body>
+    <div class="container">
+        <div class="phone-frame">
+            <div class="content">
+                <div class="verification-header">
+                    <span class="badge">Verification</span>
+                </div>
+                
+                <h2 class="verification-title">Check your email</h2>
+                
+                <div class="email-icon">✉️</div>
+                
+                <p class="verification-text">
+                    We've sent an email to user@email.com with a 4 digit code. 
+                    This can take several minutes to receive. Please check your spam folder if you don't see it.
+                </p>
+                
+                <p class="code-label">Received the code?</p>
+                
+                <div class="code-inputs">
+                    <input type="text" maxlength="1" class="code-input" oninput="moveToNext(this, 1)">
+                    <input type="text" maxlength="1" class="code-input" oninput="moveToNext(this, 2)">
+                    <input type="text" maxlength="1" class="code-input" oninput="moveToNext(this, 3)">
+                    <input type="text" maxlength="1" class="code-input" oninput="moveToNext(this, 4)">
+                </div>
+                
+                <button class="btn btn-primary" onclick="verifyCode()">Submit</button>
+            </div>
+        </div>
+    </div>
+    <script>
+    // Protect page: only logged-in users allowed
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
+    if (!loggedInUser) {
+        // Not logged in → redirect
+        window.location.href = "login.html";
+    }
+</script>
+</body>
+</html>

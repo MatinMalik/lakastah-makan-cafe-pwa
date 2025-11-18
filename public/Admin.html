@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel - Lakastah Makan Cafe</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #ffffff;
+    color: #000000; /* changed text color to black */
+    margin: 0;
+    padding: 20px;
+}
+h1, h2 { 
+    text-align: center; 
+    color: #000000; /* headings black */
+}
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 10px; 
+}
+th, td { 
+    border: 1px solid #000000; 
+    padding: 10px; 
+    text-align: left; 
+    color: #000000; /* table text black */
+}
+th { 
+    background: #ffb900; 
+    color: #000000; /* table headers black */
+}
+tr:nth-child(even) { 
+    background: #ffffff; 
+}
+button { 
+    background: #ffb900; 
+    color: #000000; /* button text black */
+    border: none; 
+    padding: 6px 12px; 
+    border-radius: 5px; 
+    cursor: pointer; 
+}
+button:hover { 
+    background: #ffb900; 
+}
+.hidden { display: none; }
+.admin-login { 
+    text-align: center; 
+    background: #ffffff; 
+    padding: 30px; 
+    border-radius: 10px; 
+    max-width: 400px; 
+    margin: 80px auto; 
+}
+.admin-login input { 
+    width: 80%; 
+    padding: 10px; 
+    margin: 10px 0; 
+    border: 1px solid #000000; /* changed input border black */
+    border-radius: 5px; 
+    background: #ffffff; 
+    color: #000000; /* input text black */
+}
+.admin-login button { 
+    width: 85%; 
+    background: #ffb900; 
+    color: #000000; /* button text black */
+    border: none; 
+    padding: 10px; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    margin-top: 10px; 
+}
+.green-badge { 
+    color: #000000; 
+    background-color: #ffb900; 
+    padding: 4px 8px; 
+    border-radius: 4px; 
+    font-weight: bold; 
+}
+.table-controls { 
+    display: flex; 
+    justify-content: flex-end; 
+    gap: 10px; 
+    margin-bottom: 5px; 
+}
+</style>
+
+</head>
+<body>
+
+<!-- Admin Login Section -->
+<div id="loginSection" class="admin-login">
+<h2>Admin Login</h2>
+<input type="email" id="adminEmail" placeholder="Admin Email" required>
+<input type="password" id="adminPassword" placeholder="Password" required>
+<button onclick="adminLogin()">Login</button>
+<p style="color:red;" id="loginMessage"></p>
+</div>
+
+<!-- Admin Panel -->
+<div id="adminPanel" class="hidden">
+
+<h1>Admin Panel</h1>
+<button onclick="goHome()">🏠 Back to Home</button>
+
+<!-- Add Menu Item -->
+<h2>Add Menu Item</h2>
+<div style="text-align:center; margin-bottom:10px;">
+    <input type="text" id="menuName" placeholder="Item Name" />
+    <input type="number" id="menuPrice" placeholder="Price" />
+    <input type="text" id="menuCategory" placeholder="Category" />
+    <button onclick="addMenuItem()">➕ Add Item</button>
+</div>
+
+
+<!-- Users Table -->
+<h2>Users</h2>
+<div class="table-controls">
+<button onclick="loadUsers()">🔄 Refresh Users</button>
+<button onclick="clearAllUsers()">🗑️ Clear All Users</button>
+</div>
+<table id="userTable">
+<thead>
+<tr>
+<th>#</th>
+<th>User ID</th>
+<th>Name</th>
+<th>Email</th>
+<th>Password</th>
+<th>Phone</th>
+<th>IC</th>
+<th>DOB</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<!-- Orders Table -->
+<h2>Orders</h2>
+<div class="table-controls">
+<button onclick="loadOrders()">🔄 Refresh Orders</button>
+<button onclick="clearAllOrders()">🗑️ Clear All Orders</button>
+</div>
+<table id="orderTable">
+<thead>
+<tr>
+<th>#</th>
+<th>Order ID</th>
+<th>User ID</th>
+<th>Total Amount</th>
+<th>Status</th>
+<th>Order Date</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<!-- Menu Items Table -->
+<h2>Menu Items</h2>
+<div class="table-controls">
+<button onclick="loadMenuItems()">🔄 Refresh Menu Items</button>
+<button onclick="clearAllMenuItems()">🗑️ Clear All Menu Items</button>
+</div>
+<table id="menuTable">
+<thead>
+<tr>
+<th>#</th>
+<th>Menu Item ID</th>
+<th>Name</th>
+<th>Price</th>
+<th>Description</th>
+<th>Category</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+</div>
+
+<script>
+const ADMIN_EMAIL = "admin@gmail.com";
+const ADMIN_PASS = "admin123";
+
+// Login
+function adminLogin(){
+    const email = document.getElementById("adminEmail").value;
+    const pass = document.getElementById("adminPassword").value;
+    const msg = document.getElementById("loginMessage");
+    if(email===ADMIN_EMAIL && pass===ADMIN_PASS){
+        localStorage.setItem("isAdminLoggedIn","true");
+        msg.textContent="";
+        showAdminPanel();
+    } else {
+        msg.textContent="Invalid admin email or password!";
+    }
+}
+
+// Show Admin
+function showAdminPanel(){
+    document.getElementById("loginSection").classList.add("hidden");
+    document.getElementById("adminPanel").classList.remove("hidden");
+    loadUsers();
+    loadOrders();
+    loadMenuItems();
+}
+
+// Go Home
+function goHome(){ window.location.href="index.html"; }
+
+// -------- USERS --------
+function loadUsers(){
+    const users = JSON.parse(localStorage.getItem("users")||"[]");
+    const tbody = document.querySelector("#userTable tbody");
+    tbody.innerHTML="";
+    if(users.length===0){ tbody.innerHTML='<tr><td colspan="9" style="text-align:center;">No users found</td></tr>'; return;}
+    users.forEach((u,i)=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML=`
+            <td>${i+1}</td>
+            <td>${u.id}</td>
+            <td>${u.name || "-"}</td>
+            <td>${u.email || "-"}</td>
+            <td>${u.password || "-"}</td>
+            <td>${u.phone || "-"}</td>
+            <td>${u.ic || "-"}</td>
+            <td>${u.dob || "-"}</td>
+            <td><button onclick="deleteUser(${i})">Delete</button></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+function deleteUser(i){
+    const users = JSON.parse(localStorage.getItem("users")||"[]");
+    if(confirm("Delete this user?")){
+        users.splice(i,1);
+        localStorage.setItem("users",JSON.stringify(users));
+        loadUsers();
+    }
+}
+function clearAllUsers(){
+    if(confirm("⚠️ Delete ALL users?")){
+        localStorage.removeItem("users");
+        loadUsers();
+    }
+}
+
+// -------- ORDERS --------
+function loadOrders(){
+    const orders = JSON.parse(localStorage.getItem("orders")||"[]");
+    const tbody = document.querySelector("#orderTable tbody");
+    tbody.innerHTML="";
+    if(orders.length===0){ tbody.innerHTML='<tr><td colspan="7" style="text-align:center;">No orders</td></tr>'; return;}
+    orders.forEach((o,i)=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML=`
+            <td>${i+1}</td>
+            <td>${o.id}</td>
+            <td>${o.userId || "-"}</td>
+            <td>${o.totalAmount || 0}</td>
+            <td>${o.status || "-"}</td>
+            <td>${o.orderDate || "-"}</td>
+            <td><button onclick="deleteOrder(${i})">Delete</button></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+function deleteOrder(i){
+    const orders = JSON.parse(localStorage.getItem("orders")||"[]");
+    if(confirm("Delete this order?")){
+        orders.splice(i,1);
+        localStorage.setItem("orders",JSON.stringify(orders));
+        loadOrders();
+    }
+}
+function clearAllOrders(){
+    if(confirm("⚠️ Delete ALL orders?")){
+        localStorage.removeItem("orders");
+        loadOrders();
+    }
+}
+
+// -------- MENU ITEMS --------
+function loadMenuItems(){
+    const items = JSON.parse(localStorage.getItem("menuItems")||"[]");
+    const tbody = document.querySelector("#menuTable tbody");
+    tbody.innerHTML="";
+    if(items.length===0){ tbody.innerHTML='<tr><td colspan="7" style="text-align:center;">No menu items</td></tr>'; return;}
+    items.forEach((m,i)=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML=`
+            <td>${i+1}</td>
+            <td>${m.id}</td>
+            <td>${m.name}</td>
+            <td>${m.price}</td>
+            <td>${m.category}</td>
+            <td><button onclick="deleteMenuItem(${i})">Delete</button></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+function deleteMenuItem(i){
+    const items = JSON.parse(localStorage.getItem("menuItems")||"[]");
+    if(confirm("Delete this menu item?")){
+        items.splice(i,1);
+        localStorage.setItem("menuItems",JSON.stringify(items));
+        loadMenuItems();
+    }
+}
+function clearAllMenuItems(){
+    if(confirm("⚠️ Delete ALL menu items?")){
+        localStorage.removeItem("menuItems");
+        loadMenuItems();
+    }
+}
+
+// Auto-login if admin already logged in
+window.onload=function(){
+    if(localStorage.getItem("isAdminLoggedIn")==="true") showAdminPanel();
+}
+</script>
+</body>
+</html>
+

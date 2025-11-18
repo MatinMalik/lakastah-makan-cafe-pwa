@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cart - Lakastah Makan Cafe</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="manifest" href="manifest.json">
+
+
+<style>
+/* === Slide-Up Animation === */
+.cart-item {
+    animation: slideUp 0.35s ease forwards;
+    transform: translateY(20px);
+    opacity: 0;
+}
+@keyframes slideUp {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* === Delete Button X === */
+.cart-item {
+    position: relative;
+    background: #fff;
+    border-radius: 10px;
+    padding: 12px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    transition: 0.3s;
+}
+
+.delete-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10;
+    font-size: 16px;
+}
+
+.cart-item-content {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+}
+
+/* Layout */
+.container { max-width: 400px; margin: auto; }
+.cart-list { margin-top: 15px; display: flex; flex-direction: column; gap: 12px; }
+.menu-image { width: 70px; height: 70px; border-radius: 10px; object-fit: cover; }
+.item-info p { margin: 0; }
+.item-name { font-weight: bold; }
+.item-qty, .item-price { color: #777; font-size: 14px; }
+
+/* Discount Box */
+.discount-box { background: #fff; padding: 12px; border-radius: 12px; margin-top: 15px; }
+.discount-box input { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ccc; }
+
+/* Summary Section */
+.summary { background: white; padding: 14px; margin-top: 15px; border-radius: 12px; }
+.summary-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.summary-total { font-weight: bold; font-size: 18px; margin-top: 8px; }
+
+/* Checkout Button */
+.checkout-btn { width: 100%; ; padding: 12px; text-align: center; font-weight: bold; margin-top: 15px; border-radius: 12px; color: white; cursor: pointer; }
+
+/* Back Button */
+.back-btn { font-size: 24px; cursor: pointer; margin-bottom: 12px; display: inline-block; }
+
+.toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 0.8rem 1.5rem;
+    border-radius: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 9999;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+
+</style>
+</head>
+
+<body>
+<div class="container">
+    <div class="phone-frame">
+        <div class="content with-nav">
+
+            <span class="back-btn" onclick="history.back()">← Back</span>
+            <h2>Your Cart</h2>
+
+            <!-- Cart Items -->
+            <div id="cart-list" class="cart-list"></div>
+
+            <!-- Discount -->
+            <div class="discount-box">
+                <label>Discount Code:</label>
+                <input type="text" id="discount-code" placeholder="Enter code...">
+            </div>
+
+            <!-- Summary -->
+            <div class="summary">
+                <div class="summary-row"><span>Subtotal</span><span id="subtotal">$0.00</span></div>
+                <div class="summary-row"><span>Discount</span><span id="discount">$0.00</span></div>
+                <hr>
+                <p class="summary-total">Total: <span id="total">$0.00</span></p>
+            </div>
+
+            <!-- Checkout -->
+            <button class="checkout-btn" id="proceed-payment">Proceed to Payment</button>
+            <!-- Add this below the Checkout button -->
+         <button class="checkout-btn" id="viewPastReceipts" style="background:#555; margin-top:10px;">View Past Receipts</button>
+        <script>
+        // Open past receipts
+        document.getElementById('viewPastReceipts').addEventListener('click', () => {
+        window.location.href = 'past-receipts.html';
+        });
+        </script>
+        </div>
+
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="home.html" class="nav-item"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></a>
+            <a href="deals.html" class="nav-item"><span class="nav-icon">🏷️</span><span class="nav-label">Deals</span></a>
+            <a href="meals.html" class="nav-item"><span class="nav-icon">🍽️</span><span class="nav-label">Menu</span></a>
+            <a href="cart.html" class="nav-item active"><span class="nav-icon">🛒</span><span class="nav-label">Cart</span></a>
+            <a href="profile.html" class="nav-item"><span class="nav-icon">👤</span><span class="nav-label">You</span></a>
+        </nav>
+    </div>
+</div>
+<div class="toast" id="toast">Message</div>
+
+<script>
+    // Protect page: only logged-in users allowed
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
+    if (!loggedInUser) {
+        // Not logged in → redirect
+        window.location.href = "login.html";
+    }
+</script>
+
+<script>
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+const cartList = document.getElementById('cart-list');
+const subtotalEl = document.getElementById('subtotal');
+const discountEl = document.getElementById('discount');
+const totalEl = document.getElementById('total');
+const discountInput = document.getElementById('discount-code');
+
+function updateCart() {
+    cartList.innerHTML = '';
+    let subtotal = 0;
+
+    cart.forEach((item, index) => {
+        subtotal += item.price * item.qty;
+
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+            <div class="delete-btn" onclick="deleteItem(${index})">✖</div>
+            <div class="cart-item-content">
+                <img src="${item.image}" class="menu-image">
+                <div class="item-info">
+                    <p class="item-name">${item.name}</p>
+                    <p class="item-qty">Qty: ${item.qty}</p>
+                    <p class="item-price">$${(item.price*item.qty).toFixed(2)}</p>
+                </div>
+            </div>
+        `;
+        cartList.appendChild(div);
+    });
+
+    let discount = discountInput.value === 'DISCOUNT10' ? subtotal * 0.1 : 0;
+    subtotalEl.innerText = `$${subtotal.toFixed(2)}`;
+    discountEl.innerText = `$${discount.toFixed(2)}`;
+    totalEl.innerText = `$${(subtotal - discount).toFixed(2)}`;
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+// Delete item by index
+function deleteItem(index) {
+    cart.splice(index, 1);
+    updateCart();
+}
+
+discountInput.addEventListener('input', updateCart);
+updateCart();
+
+function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2000);
+}
+
+// Proceed to Payment
+document.getElementById('proceed-payment').addEventListener('click', () => {
+    if(cart.length === 0){
+        showToast("Cart is empty!");
+
+        return;
+    }
+
+    // Save cart + discount to localStorage for payment page
+    localStorage.setItem('paymentData', JSON.stringify({
+        cart: cart,
+        discountCode: discountInput.value
+    }));
+
+    // Redirect to payment page
+    window.location.href = 'payment.html';
+});
+
+
+</script>
+
+</body>
+</html>

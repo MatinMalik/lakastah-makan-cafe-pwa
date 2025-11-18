@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment - Lakastah Makan Cafe</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="manifest" href="manifest.json">
+
+<style>
+.toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 0.8rem 1.5rem;
+    border-radius: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 9999;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="phone-frame">
+        <div class="content with-nav">
+            <div class="payment-header">
+                <button class="back-btn" onclick="history.back()">←</button>
+                <h2>Payment</h2>
+                <span class="payment-icon">💰</span>
+            </div>
+            
+            <div class="payment-methods">
+                <div class="payment-method" onclick="selectPayment('cash')">
+                    <span class="payment-icon">💵</span>
+                    <span>Cash Payment</span>
+                </div>
+                <div class="payment-method" onclick="selectPayment('card')">
+                    <span class="payment-icon">💳</span>
+                    <span>BIBD</span>
+                </div>
+            </div>
+            
+            <div id="cardForm" class="card-form" style="display: none;">
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label>Card Name</label>
+                        <input type="text" class="input-field" placeholder="Name">
+                    </div>
+                    <div class="form-group half">
+                        <label>CVV</label>
+                        <input type="text" class="input-field" placeholder="123" maxlength="3">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Card Number</label>
+                    <input type="text" class="input-field" placeholder="1234 5678 9012 3456" maxlength="19">
+                </div>
+            </div>
+            
+            <div class="payment-total">
+                <span>Total :</span>
+                <span class="total-amount" id="totalAmount">$0.00</span>
+            </div>
+            
+            <button class="btn btn-primary" id="confirmPaymentBtn">CONFIRM</button>
+        </div>
+        
+        <nav class="bottom-nav">
+            <a href="home.html" class="nav-item">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">Home</span>
+            </a>
+            <a href="deals.html" class="nav-item">
+                <span class="nav-icon">🏷️</span>
+                <span class="nav-label">Deals</span>
+            </a>
+            <a href="meals.html" class="nav-item">
+                <span class="nav-icon">🍽️</span>
+                <span class="nav-label">Menu</span>
+            </a>
+            <a href="cart.html" class="nav-item active">
+                <span class="nav-icon">🛒</span>
+                <span class="nav-label">Cart</span>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <span class="nav-icon">👤</span>
+                <span class="nav-label">You</span>
+            </a>
+        </nav>
+    </div>
+</div>
+
+<div class="toast" id="toast">Message</div>
+
+<script>
+const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+if (!loggedInUser) window.location.href = "login.html";
+
+let paymentData = JSON.parse(localStorage.getItem('paymentData')) || { cart: [], discountCode: '' };
+let cart = paymentData.cart;
+let discountCode = paymentData.discountCode;
+const totalAmountEl = document.getElementById('totalAmount');
+
+// Calculate total
+function calculateTotal() {
+    let subtotal = 0, totalQty = 0;
+    cart.forEach(item => {
+        subtotal += item.price * item.qty;
+        totalQty += item.qty;
+    });
+    const discount = discountCode === 'DISCOUNT10' ? subtotal * 0.1 : 0;
+    const total = subtotal - discount;
+    totalAmountEl.textContent = `$${total.toFixed(2)} (${totalQty} items)`;
+    return { subtotal, discount, total, totalQty };
+}
+
+// Show/hide card form
+function selectPayment(method) {
+    document.getElementById('cardForm').style.display = method === 'card' ? 'block' : 'none';
+}
+
+// Toast function
+function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 2000);
+}
+
+// Confirm payment
+document.getElementById('confirmPaymentBtn').addEventListener('click', () => {
+    if (cart.length === 0) {
+        showToast("Cart is empty!");
+        return;
+    }
+
+    const orderItems = cart.map(item => ({
+        name: item.name,
+        price: item.price,
+        qty: item.qty,
+        total: item.price * item.qty
+    }));
+
+    const subtotal = orderItems.reduce((sum, item) => sum + item.total, 0);
+    const discount = discountCode === 'DISCOUNT10' ? subtotal * 0.1 : 0;
+    const total = subtotal - discount;
+
+    // Save order for admin
+    const user = loggedInUser;
+    const orders = JSON.parse(localStorage.getItem("orders")) || [];
+    const newOrder = {
+        orderid: Date.now(),
+        userid: user?.id || null,
+        items: orderItems,
+        totalamount: orderItems.reduce((sum, item) => sum + item.qty, 0),
+        totalprice: total
+    };
+    orders.push(newOrder);
+    localStorage.setItem("orders", JSON.stringify(orders));
+
+    // Save receipt for receipt page
+    const receipt = {
+        orderNumber: newOrder.orderid,
+        cart: orderItems,
+        subtotal,
+        discount,
+        total,
+        date: new Date().toLocaleString()
+    };
+    localStorage.setItem("receipt", JSON.stringify(receipt));
+
+    // Clear cart & payment data
+    localStorage.removeItem("cart");
+    localStorage.removeItem("paymentData");
+
+    showToast("Payment successful!");
+    setTimeout(() => window.location.href = "receipt.html", 2000);
+});
+
+// Initial total calculation
+calculateTotal();
+</script>
+</body>
+</html>
