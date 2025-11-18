@@ -76,7 +76,17 @@
             </nav>
         </div>
     </div>
+    
+
+
     <script>
+const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+const userName = currentUser?.name || "Guest";
+
+// Replace text inside the h2
+document.querySelector(".welcome-user").textContent = `Welcome, ${userName}`;
+
+
     // Protect page: only logged-in users allowed
     const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 
