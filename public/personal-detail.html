@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personal Details - Lakastah Makan Cafe</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="manifest" href="manifest.json">
+
+<style>
+/* Toast Notification */
+.toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 0.8rem 1.5rem;
+    border-radius: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 20;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Bottom nav hover effect */
+.nav-item:hover {
+    transform: translateY(-3px);
+}
+
+/* Date Picker */
+.date-input {
+    position: relative;
+}
+
+.date-input input {
+    cursor: pointer;
+}
+
+.date-picker {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    z-index: 15;
+    display: none;
+    padding: 0.5rem;
+}
+
+.date-picker input[type="date"] {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+}
+/* --- Save Button Redesign --- */
+.btn-primary {
+    width: 100%;
+    padding: 0.95rem;
+    background: linear-gradient(135deg, #eb9d00, #f9a600);
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 6px 15px rgba(255,126,95,0.3);
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+    box-shadow: 0 8px 20px rgba(255,126,95,0.4);
+    transform: translateY(-2px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 10px rgba(255,126,95,0.2);
+}
+/* Back Button */
+.back-btn { font-size: 24px; cursor: pointer; margin-bottom: 12px; display: inline-block; }
+
+
+</style>
+</head>
+<body>
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <button class="back-btn" onclick="history.back()">←</button>
+        <h2 class="page-title">Personal Details</h2>
+    </div>
+
+    <!-- Profile Section -->
+    <div class="profile-section">
+        <h3 class="section-title">My Information</h3>
+        
+        <div class="form-group">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-input" id="name" placeholder="Enter your name">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" id="email" placeholder="Enter your email">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" class="form-input" id="phone" placeholder="Enter your phone number">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">IC/FIN</label>
+            <input type="text" class="form-input" id="ic" placeholder="Enter your IC/FIN">
+        </div>
+
+        <div class="form-group date-input">
+            <label class="form-label">Date of Birth</label>
+            <input type="text" class="form-input" id="dobInput" placeholder="DD/MM/YYYY" readonly>
+            <div class="date-picker" id="datePicker">
+                <input type="date" id="dobPicker">
+            </div>
+        </div>
+
+        <button class="btn-primary" id="saveBtn" style="margin-top: 2rem;">Save</button>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">Saved!</div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+                <a href="home.html" class="nav-item">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">Home</span>
+                </a>
+                <a href="deals.html" class="nav-item">
+                    <span class="nav-icon">🏷️</span>
+                    <span class="nav-label">Deals</span>
+                </a>
+                <a href="meals.html" class="nav-item">
+                    <span class="nav-icon">🍽️</span>
+                    <span class="nav-label">Menu</span>
+                </a>
+                <a href="cart.html" class="nav-item">
+                    <span class="nav-icon">🛒</span>
+                    <span class="nav-label">Cart</span>
+                </a>
+                <a href="profile.html" class="nav-item active">
+                    <span class="nav-icon">👤</span>
+                    <span class="nav-label">You</span>
+                </a>
+            </nav>
+</div>
+<script>
+    // Protect page: only logged-in users allowed
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
+    if (!loggedInUser) {
+        // Not logged in → redirect
+        window.location.href = "login.html";
+    }
+</script>
+
+
+<script>
+
+    
+// --- Toast Notification ---
+const saveBtn = document.getElementById('saveBtn');
+const toast = document.getElementById('toast');
+
+// Inputs
+const nameInput = document.getElementById('name');
+const emailInput = document.getElementById('email');
+const phoneInput = document.getElementById('phone');
+const icInput = document.getElementById('ic');
+const dobInput = document.getElementById('dobInput');
+const datePicker = document.getElementById('datePicker');
+const dobPicker = document.getElementById('dobPicker');
+
+// Load saved data on page load
+window.addEventListener('load', () => {
+    if(localStorage.getItem('name')) nameInput.value = localStorage.getItem('name');
+    if(localStorage.getItem('email')) emailInput.value = localStorage.getItem('email');
+    if(localStorage.getItem('phone')) phoneInput.value = localStorage.getItem('phone');
+    if(localStorage.getItem('ic')) icInput.value = localStorage.getItem('ic');
+    if(localStorage.getItem('dob')) dobInput.value = localStorage.getItem('dob');
+});
+
+saveBtn.addEventListener('click', () => {
+    // Load existing users list
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const userId = loggedInUser?.id;
+
+    // Find user
+    const existingIndex = users.findIndex(u => u.id === userId);
+
+    let existingPassword = "";
+
+    // Keep the old password
+    if (existingIndex > -1) {
+        existingPassword = users[existingIndex].password || "";
+    }
+
+    // Collect updated user info
+    const userData = {
+        id: userId || Date.now(),
+        name: nameInput.value,
+        email: emailInput.value,
+        phone: phoneInput.value,
+        ic: icInput.value,
+        dob: dobInput.value,
+        password: existingPassword  // 🔥 keep the old password
+    };
+
+    // Update or add user
+    if (existingIndex > -1) {
+        users[existingIndex] = userData;
+    } else {
+        users.push(userData);
+    }
+
+    localStorage.setItem('users', JSON.stringify(users));
+
+    // Save individual data too
+    localStorage.setItem('name', userData.name);
+    localStorage.setItem('email', userData.email);
+    localStorage.setItem('phone', userData.phone);
+    localStorage.setItem('ic', userData.ic);
+    localStorage.setItem('dob', userData.dob);
+
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+});
+
+
+
+// --- Bottom nav click effect ---
+const navItems = document.querySelectorAll('.nav-item');
+navItems.forEach(item => {
+    item.addEventListener('click', () => {
+        navItems.forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+    });
+});
+
+// --- Date Picker ---
+dobInput.addEventListener('click', () => {
+    datePicker.style.display = datePicker.style.display === 'block' ? 'none' : 'block';
+});
+
+dobPicker.addEventListener('change', () => {
+    const date = new Date(dobPicker.value);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth()+1).padStart(2, '0');
+    const year = date.getFullYear();
+    dobInput.value = `${day}/${month}/${year}`;
+    datePicker.style.display = 'none';
+});
+</script>
+</body>
+</html>
