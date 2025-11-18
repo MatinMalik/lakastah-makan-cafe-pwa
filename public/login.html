@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Lakastah Makan Cafe</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+
+
+    <style>/* Back Button */
+.back-btn { font-size: 24px; cursor: pointer; margin-bottom: 12px; display: inline-block; }
+
+.toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 0.8rem 1.5rem;
+    border-radius: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 9999;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+</style>
+    
+</head>
+<body>
+    <div class="container">
+        <div class="phone-frame">
+            <div class="content">
+
+                <span class="back-btn" onclick="window.location.href='index.html'">← Back</span>
+
+                <img src="cafe-logo.jpg" alt="Kwastah Makan Cafe" class="logo-small">
+                
+                <form class="form" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" class="input-field" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="password" name="password" class="input-field" required>
+                            <button type="button" class="toggle-password" onclick="togglePassword()">👁️</button>
+                        </div>
+                    </div>
+                    
+                    <a href="#" class="forgot-password">Forgot your password?</a>
+                    
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">Message</div>
+
+    <script>
+function handleLogin(event){
+    event.preventDefault();
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    let users = JSON.parse(localStorage.getItem("users")||"[]");
+
+    const user = users.find(u => u.email===email && u.password===password);
+
+
+    function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2000);
+}
+
+
+    if (!user) {
+    showToast("Incorrect email or password");
+    return;
+}
+
+    localStorage.setItem("currentUser", JSON.stringify(user));
+
+showToast("Login successful! Redirecting...");
+
+setTimeout(() => {
+    window.location.href = "home.html";
+}, 1500);
+}
+
+// Show/Hide Password
+function togglePassword() {
+    const field = document.getElementById("password");
+    field.type = field.type === "password" ? "text" : "password";
+}
+</script>
+
+    
+</body>
+</html>

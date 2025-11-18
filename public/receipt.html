@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Receipt - Lakastah Makan Cafe</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="manifest" href="manifest.json">
+
+<style>
+/* === Container & Phone Frame === */
+.container { max-width: 400px; margin: auto; }
+.phone-frame {
+    width: 400px;
+    height: 780px;
+    border-radius: 30px;
+    border: 1px solid #ccc;
+    background: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.content.with-nav { flex: 1; padding: 12px 16px 80px 16px; overflow-y: auto; }
+
+/* Header */
+.page-header { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    font-size: 20px; 
+    font-weight: bold; 
+    margin-bottom: 12px; 
+}
+.back-btn { font-size: 24px; cursor: pointer; }
+
+/* Receipt Item */
+.receipt-item {
+    background: #fff;
+    padding: 12px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    animation: slideUp 0.35s ease forwards;
+    transform: translateY(20px);
+    opacity: 0;
+}
+@keyframes slideUp { to { transform: translateY(0); opacity: 1; } }
+
+/* Summary Box */
+.summary {
+    background: #fff;
+    padding: 14px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    margin-top: 12px;
+}
+.summary-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.summary-row strong { font-weight: 600; font-size: 16px; }
+
+/* Back/Home Button */
+.btn-back {
+    width: 100%;
+    padding: 12px;
+    margin-top: 14px;
+    background: #dfbe51;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+.nav-item { text-align: center; color: #777; font-size: 12px; text-decoration: none; }
+.nav-item.active { color: #ff7a00; }
+.nav-icon { display: block; font-size: 20px; }
+.nav-label { display: block; font-size: 10px; }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="phone-frame">
+        <div class="content with-nav">
+
+            <!-- Header -->
+            <div class="page-header">
+                <span class="back-btn" onclick="history.back()">←</span>
+                Receipt
+            </div>
+
+            <!-- Receipt Items -->
+            <div id="receipt-list"></div>
+
+            <!-- Summary -->
+            <div class="summary" id="receipt-summary"></div>
+
+            <!-- Back to Home -->
+            <button class="btn-back" onclick="window.location.href='home.html'">🏠 Back to Home</button>
+
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="home.html" class="nav-item"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></a>
+            <a href="deals.html" class="nav-item"><span class="nav-icon">🏷️</span><span class="nav-label">Deals</span></a>
+            <a href="meals.html" class="nav-item"><span class="nav-icon">🍽️</span><span class="nav-label">Menu</span></a>
+            <a href="cart.html" class="nav-item"><span class="nav-icon">🛒</span><span class="nav-label">Cart</span></a>
+            <a href="profile.html" class="nav-item active"><span class="nav-icon">👤</span><span class="nav-label">You</span></a>
+        </nav>
+    </div>
+</div>
+
+<script>
+const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+if (!loggedInUser) window.location.href = "login.html";
+
+// Load receipt data saved from payment
+const receipt = JSON.parse(localStorage.getItem('receipt') || '{}');
+const receiptList = document.getElementById('receipt-list');
+const receiptSummary = document.getElementById('receipt-summary');
+
+if(receipt.cart && receipt.cart.length > 0){
+    // Show receipt number and date
+    const header = document.createElement('div');
+    header.style.textAlign = "center";
+    header.style.marginBottom = "12px";
+    header.innerHTML = `<strong>Receipt #${receipt.orderNumber}</strong><br>${receipt.date}`;
+    receiptList.appendChild(header);
+
+    // List items
+    receipt.cart.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'receipt-item';
+        div.innerHTML = `<span>${item.name} x${item.qty}</span><span>$${(item.price*item.qty).toFixed(2)}</span>`;
+        receiptList.appendChild(div);
+    });
+
+    // Show summary
+    receiptSummary.innerHTML = `
+        <div class="summary-row"><span>Subtotal</span><span>$${receipt.subtotal.toFixed(2)}</span></div>
+        <div class="summary-row"><span>Discount</span><span>$${receipt.discount.toFixed(2)}</span></div>
+        <div class="summary-row"><strong>Total</strong><strong>$${receipt.total.toFixed(2)}</strong></div>
+    `;
+} else {
+    receiptList.innerHTML = '<p style="text-align:center; color:#777; margin-top:20px;">No items in receipt.</p>';
+}
+
+
+
+</script>
+</body>
+</html>

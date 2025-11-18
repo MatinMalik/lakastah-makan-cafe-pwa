@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Lakastah Makan Cafe</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+
+</head>
+<body>
+    <div class="container">
+        <div class="phone-frame">
+            <div class="content with-nav">
+
+                <!-- SEARCH BAR -->
+                <div class="search-bar">
+                    <input type="text" placeholder="Search" class="search-input" id="searchInput">
+                    <button class="search-btn" id="searchBtn">🔍</button>
+                </div>
+
+                <div class="new-menu-section">
+                    <h3>New Menu here</h3>
+                    <div class="new-menu-banner">
+                        <img src="buttermilk-chicken.png" alt="New Menu" class="banner-image">
+                        <span class="new-badge">NEW!</span>
+                    </div>
+                </div>
+                
+                <h2 class="welcome-user">Welcome, User Name</h2>
+                
+                <div class="quick-menu">
+                    <img src="nasi-katok.png" alt="Menu 1" class="quick-menu-item">
+                    <img src="nasi-katok-kambing.png" alt="Menu 2" class="quick-menu-item">
+                    <img src="nasi-ayam-penyet.png" alt="Menu 3" class="quick-menu-item">
+                </div>
+                
+                <div class="location-section">
+    <h3>Locate Us 📍</h3>
+    <div class="map-placeholder">
+        <!-- Google Maps iframe without API key -->
+        <iframe
+            src="https://www.google.com/maps?q=Lambak+Kanan&output=embed"
+            width="100%"
+            height="250"
+            style="border:0;"
+            allowfullscreen=""
+            loading="lazy">
+        </iframe>
+    </div>
+</div>
+
+
+            
+            <nav class="bottom-nav">
+                <a href="home.html" class="nav-item active">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">Home</span>
+                </a>
+                <a href="deals.html" class="nav-item">
+                    <span class="nav-icon">🏷️</span>
+                    <span class="nav-label">Deals</span>
+                </a>
+                <a href="meals.html" class="nav-item">
+                    <span class="nav-icon">🍽️</span>
+                    <span class="nav-label">Menu</span>
+                </a>
+                <a href="cart.html" class="nav-item">
+                    <span class="nav-icon">🛒</span>
+                    <span class="nav-label">Cart</span>
+                </a>
+                <a href="profile.html" class="nav-item">
+                    <span class="nav-icon">👤</span>
+                    <span class="nav-label">You</span>
+                </a>
+            </nav>
+        </div>
+    </div>
+    
+
+
+    <script>
+const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+const userName = currentUser?.name || "Guest";
+
+// Replace text inside the h2
+document.querySelector(".welcome-user").textContent = `Welcome, ${userName}`;
+
+
+    // Protect page: only logged-in users allowed
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
+    if (!loggedInUser) {
+        // Not logged in → redirect
+        window.location.href = "login.html";
+    }
+</script>
+
+    <!-- ========================= -->
+    <!-- SEARCH FUNCTION SCRIPT   -->
+    <!-- ========================= -->
+    <script>
+        const input = document.getElementById("searchInput");
+        const btn = document.getElementById("searchBtn");
+
+        // When clicking the search button
+        btn.addEventListener("click", () => {
+            goSearch();
+        });
+
+        // When pressing Enter
+        input.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") goSearch();
+        });
+
+        function goSearch() {
+            const keyword = input.value.trim();
+            if (keyword === "") return;
+
+            // Redirect to meals page with keyword
+            window.location.href = `meals.html?search=${encodeURIComponent(keyword)}`;
+        }
+    </script>
+
+</body>
+</html>

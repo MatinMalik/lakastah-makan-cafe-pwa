@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snacks Menu - Lakastah Makan Cafe</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="manifest" href="manifest.json">
+
+
+</head>
+<body>
+<div class="container">
+    <div class="phone-frame">
+        <div class="content with-nav">
+
+            <div class="search-bar">
+                <input type="text" placeholder="Search" class="search-input">
+                <button class="search-btn">🔍</button>
+            </div>
+
+            <div class="categories">
+                <h3>📋 Categories</h3>
+                <div class="category-tabs">
+                    <button class="category-tab" onclick="location.href='meals.html'">Meals</button>
+                    <button class="category-tab active">Snacks</button>
+                    <button class="category-tab" onclick="location.href='drinks.html'">Drinks</button>
+                </div>
+            </div>
+
+            <!-- Snacks Grid -->
+            <div class="menu-grid">
+                <div class="menu-card" onclick="openMenu('Kueh Lenggang', 'kueh-lenggang.png', 1.50)">
+                    <img src="kueh-lenggang.png" alt="Kueh Lenggang" class="menu-image">
+                    <p class="menu-name">Kueh Lenggang</p>
+                </div>
+                <div class="menu-card" onclick="openMenu('Kueh Keria', 'keria.png', 1.20)">
+                    <img src="keria.png" alt="Kueh Keria" class="menu-image">
+                    <p class="menu-name">Kueh Keria</p>
+                </div>
+                <div class="menu-card" onclick="openMenu('Penyaram', 'penyaram.png', 1.80)">
+                    <img src="penyaram.png" alt="Penyaram" class="menu-image">
+                    <p class="menu-name">Penyaram</p>
+                </div>
+                <div class="menu-card" onclick="openMenu('Kueh Kelupis', 'kelupis.png', 1.50)">
+                    <img src="kelupis.png" alt="Kueh Kelupis" class="menu-image">
+                    <p class="menu-name">Kueh Kelupis</p>
+                </div>
+                <div class="menu-card" onclick="openMenu('Kueh Seri Muka', 'Kuih-Seri-Muka.png', 2.00)">
+                    <img src="Kuih-Seri-Muka.png" alt="Kueh Seri Muka" class="menu-image">
+                    <p class="menu-name">Kueh Seri Muka</p>
+                </div>
+                <div class="menu-card" onclick="openMenu('Pulut Panggang', 'pulut-panggang.png', 1.30)">
+                    <img src="pulut-panggang.png" alt="Pulut Panggang" class="menu-image">
+                    <p class="menu-name">Pulut Panggang</p>
+                </div>
+            </div>
+
+            <!-- Modal Popup -->
+            <div id="menuModal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeMenu()">&times;</span>
+                    <img id="modalImg" src="">
+                    <h2 id="modalName"></h2>
+                    <p id="modalPrice"></p>
+                    <div class="quantity-box">
+                        <button onclick="changeQty(-1)">−</button>
+                        <span id="qty">1</span>
+                        <button onclick="changeQty(1)">+</button>
+                    </div>
+                    <button class="add-btn" onclick="addToCart()">Add to Cart 🛒</button>
+                    <button class="add-btn" onclick="addToFavorites()">⭐ Add to Favorites</button>
+                </div>
+            </div>
+
+            <nav class="bottom-nav">
+                <a href="home.html" class="nav-item">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">Home</span>
+                </a>
+                <a href="deals.html" class="nav-item">
+                    <span class="nav-icon">🏷️</span>
+                    <span class="nav-label">Deals</span>
+                </a>
+                <a href="meals.html" class="nav-item active">
+                    <span class="nav-icon">🍽️</span>
+                    <span class="nav-label">Menu</span>
+                </a>
+                <a href="cart.html" class="nav-item">
+                    <span class="nav-icon">🛒</span>
+                    <span class="nav-label">Cart</span>
+                </a>
+                <a href="profile.html" class="nav-item">
+                    <span class="nav-icon">👤</span>
+                    <span class="nav-label">You</span>
+                </a>
+            </nav>
+        </div>
+    </div>
+</div>
+<script>
+function addToFavorites() {
+    // Get favorites from localStorage or create new array
+    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+
+    // Check if item already exists
+    const exists = favorites.some(item => item.name === selectedItem.name);
+    if (!exists) {
+        favorites.push({
+            name: selectedItem.name,
+            image: selectedItem.image,
+            price: selectedItem.price
+        });
+
+        // Save back to localStorage
+        localStorage.setItem("favorites", JSON.stringify(favorites));
+    }
+
+    closeMenu(); // Close the modal
+   
+}
+</script>
+
+<script>
+    // Protect page: only logged-in users allowed
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
+    if (!loggedInUser) {
+        // Not logged in → redirect
+        window.location.href = "login.html";
+    }
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const searchInput = document.querySelector(".search-input");
+        const menuGrid = document.querySelector(".menu-grid");
+        const menuCards = menuGrid.querySelectorAll(".menu-card");
+
+        searchInput.addEventListener("input", () => {
+            const query = searchInput.value.toLowerCase();
+            let foundAny = false;
+
+            menuCards.forEach(card => {
+                const nameElement = card.querySelector(".menu-name");
+                const originalText = nameElement.textContent;
+const nameText = originalText.toLowerCase();
+
+                // Reset highlight
+                nameElement.innerHTML = nameElement.textContent;
+
+                if (nameText.includes(query)) {
+                    card.style.display = "block";
+                    foundAny = true;
+
+                    // highlight matched text
+                    if (query !== "") {
+    const regex = new RegExp(`(${query})`, "gi");
+    nameElement.innerHTML = originalText.replace(regex, "<span class='highlight'>$1</span>");
+}
+                } else {
+                    card.style.display = "none";
+                }
+            });
+
+            // Handle "No results found"
+            let noResult = document.querySelector(".no-result");
+            if (!foundAny && query !== "") {
+                if (!noResult) {
+                    noResult = document.createElement("div");
+                    noResult.className = "no-result";
+                    noResult.textContent = "No results found";
+                    menuGrid.appendChild(noResult);
+                }
+            } else if (noResult) {
+                noResult.remove();
+            }
+        });
+    });
+    </script>
+
+   <script>
+    let selectedItem = {};
+    let quantity = 1;
+
+    function openMenu(name, image, price) {
+        document.getElementById("modalName").textContent = name;
+        document.getElementById("modalImg").src = image;
+        document.getElementById("modalPrice").textContent = "BND " + price.toFixed(2);
+        quantity = 1;
+        document.getElementById("qty").textContent = 1;
+        selectedItem = { name, image, price };
+        document.getElementById("menuModal").style.display = "flex";
+    }
+
+    function closeMenu() {
+        document.getElementById("menuModal").style.display = "none";
+    }
+
+    function changeQty(val) {
+        quantity += val;
+        if (quantity < 1) quantity = 1;
+        document.getElementById("qty").textContent = quantity;
+    }
+
+    function addToCart() {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        let existing = cart.find(item => item.name === selectedItem.name);
+        if (existing) {
+            existing.qty += quantity;
+        } else {
+            cart.push({
+                name: selectedItem.name,
+                image: selectedItem.image,
+                price: selectedItem.price,
+                qty: quantity
+            });
+        }
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartCount();
+        closeMenu();
+        // Optional: show success message here
+    }
+
+    function updateCartCount() {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        let total = cart.reduce((sum, item) => sum + item.qty, 0);
+        let cartCountEl = document.getElementById("cartCount");
+        if (cartCountEl) cartCountEl.textContent = total;
+    }
+
+    updateCartCount();
+    </script>
+</body>
+</html>
