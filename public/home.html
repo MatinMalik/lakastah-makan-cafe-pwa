@@ -80,20 +80,19 @@
 
 
     <script>
-const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
-const userName = loggedInUser?.name || "Guest";
+    // Get logged-in user
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 
-document.querySelector(".welcome-user").textContent = `Welcome, ${userName}`;
-</script>
-<script>
-    // Protect page: only logged-in users allowed
-    loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
-
+    // Protect page
     if (!loggedInUser) {
-        // Not logged in → redirect
         window.location.href = "login.html";
+    } else {
+        // Show greeting
+        const userName = loggedInUser.name || "Guest";
+        document.querySelector(".welcome-user").textContent = `Welcome, ${userName}`;
     }
 </script>
+
 
     <!-- ========================= -->
     <!-- SEARCH FUNCTION SCRIPT   -->
