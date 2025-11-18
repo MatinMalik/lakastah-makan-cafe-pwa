@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Lakastah Makan Cafe</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+
+</head>
+<body>
+    <div class="container">
+        <div class="phone-frame">
+            <div class="content with-nav">
+                <div class="profile-header">
+                    <h2>👤 My profile</h2>
+                </div>
+                
+                <div class="profile-menu">
+                    <a href="personal-detail.html" class="profile-menu-item">
+                        <span class="menu-icon">👤</span>
+                        <span>Personal Detail</span>
+                        <span class="arrow">→</span>
+                    </a>
+                    
+                    <a href="security.html" class="profile-menu-item">
+                        <span class="menu-icon">🔒</span>
+                        <span>Password & Security</span>
+                        <span class="arrow">→</span>
+                    </a>
+                    
+                    <a href="rewards.html" class="profile-menu-item">
+                        <span class="menu-icon">🎁</span>
+                        <span>My Reward</span>
+                        <span class="arrow">→</span>
+                    </a>
+                    
+                    <a href="languages.html" class="profile-menu-item">
+                        <span class="menu-icon">🌐</span>
+                        <span>Languages</span>
+                        <span class="arrow">→</span>
+                    </a>
+                    
+                    <a href="favorites.html" class="profile-menu-item">
+                        <span class="menu-icon">⭐</span>
+                        <span>My Favourites</span>
+                        <span class="arrow">→</span>
+                    </a>
+                    
+                    <a href="index.html" class="profile-menu-item logout">
+                        <span class="menu-icon">🚪</span>
+                        <span>Log Out</span>
+                        <span class="arrow">→</span>
+                    </a>
+                </div>
+            </div>
+            
+            <nav class="bottom-nav">
+                <a href="home.html" class="nav-item">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">Home</span>
+                </a>
+                <a href="deals.html" class="nav-item">
+                    <span class="nav-icon">🏷️</span>
+                    <span class="nav-label">Deals</span>
+                </a>
+                <a href="meals.html" class="nav-item">
+                    <span class="nav-icon">🍽️</span>
+                    <span class="nav-label">Menu</span>
+                </a>
+                <a href="cart.html" class="nav-item">
+                    <span class="nav-icon">🛒</span>
+                    <span class="nav-label">Cart</span>
+                </a>
+                <a href="profile.html" class="nav-item active">
+                    <span class="nav-icon">👤</span>
+                    <span class="nav-label">You</span>
+                </a>
+            </nav>
+        </div>
+    </div>
+<script>
+    // Protect page: only logged-in users allowed
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
+    if (!loggedInUser) {
+        // Not logged in → redirect
+        window.location.href = "login.html";
+    }
+</script>
+
+
+<script>
+    document.querySelector(".logout").addEventListener("click", function (event) {
+        event.preventDefault(); // stop the default link navigation
+
+        // Remove logged-in user
+        localStorage.removeItem("loggedInUser");
+
+        // Optional: clear cart too
+        localStorage.removeItem("cart");
+        localStorage.removeItem("paymentData");
+
+        // Redirect to login or homepage
+        window.location.href = "index.html";
+    });
+</script>
+
+</body>
+</html>

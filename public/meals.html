@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meals Menu - Lakastah Makan Cafe</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+
+</head>
+<body>
+    <div class="container">
+        <div class="phone-frame">
+            <div class="content with-nav">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search" class="search-input">
+                    <button class="search-btn">🔍</button>
+                </div>
+                
+                <div class="categories">
+                    <h3>📋 Categories</h3>
+                    <div class="category-tabs">
+                        <button class="category-tab active">Meals</button>
+                        <button class="category-tab" onclick="location.href='snacks.html'">Snacks</button>
+                        <button class="category-tab" onclick="location.href='drinks.html'">Drinks</button>
+                    </div>
+                </div>
+                
+                <div class="menu-grid">
+                    <div class="menu-card" onclick="openMenu('Nasi Katok Ayam Goreng', 'nasi-katok.png', 3.50)">
+                    <img src="nasi-katok.png" alt="Nasi Katok Kambing" class="menu-image">
+                    <p class="menu-name">Nasi Katok Ayam Goreng</p>
+                </div>
+                    <div class="menu-card" onclick="openMenu('Nasi Katok Kambing', 'nasi-katok-kambing.png', 2.00)">
+                        <img src="nasi-katok-kambing.png" alt="Nasi Katok Kambing" class="menu-image">
+                        <p class="menu-name">Nasi Katok Kambing</p>
+                    </div>
+                    <div class="menu-card" onclick="openMenu('Nasi Katok Ayam Penyet', 'nasi-ayam-penyet.png', 3.00)">
+                        <img src="nasi-ayam-penyet.png" alt="Nasi Ayam penyet" class="menu-image">
+                        <p class="menu-name">Nasi Ayam penyet</p>
+                    </div>
+                    <div class="menu-card" onclick="openMenu('Indomie Ayam Penyet', 'indomee-ayam-penyet.png', 3.00)"> 
+                        <img src="indomee-ayam-penyet.png" alt="Indomee Ayam Penyet" class="menu-image">
+                        <p class="menu-name">Indomee Ayam Penyet</p>
+                    </div>
+                    <div class="menu-card" onclick="openMenu('Kolo Mee', 'kolo-mee.png', 3.00)">
+                        <img src="kolo-mee.png" alt="Kolo Mee" class="menu-image">
+                        <p class="menu-name">kolo Mee</p>
+                    </div>
+                    <div class="menu-card" onclick="openMenu('Nasi Ayam', 'nasi-ayam.png', 3.00)">
+                        <img src="nasi-ayam.png" alt="Nasi Ayam" class="menu-image">
+                        <p class="menu-name">Nasi Ayam</p>
+                    </div>
+                    <div class="menu-card" onclick="openMenu('Buttermilk Chicken', 'buttermilk-chicken.png', 3.50)">
+                        <img src="buttermilk-chicken.png" alt="Buttermilk Chicken with Rice" class="menu-image">
+                        <p class="menu-name">Buttermilk Chicken with Rice</p>
+                    </div>
+                    <div class="menu-card" onclick="openMenu('Laksa', 'laksa.png', 4.00)"> 
+                        <img src="laksa.png" alt="Laksa" class="menu-image">
+                        <p class="menu-name">Laksa</p>
+                    </div>
+                    <div class="menu-card" onclick="openMenu('Ambuyat', 'ambuyat.png', 2.50)"> 
+                        <img src="ambuyat.png" alt="Ambuyat" class="menu-image">
+                        <p class="menu-name">Ambuyat</p>
+                    </div>
+                    <div class="menu-card" onclick="openMenu('Mee Curry', 'mee-curry.png', 2.50)">
+                        <img src="mee-curry.png" alt="Mee Curry" class="menu-image">
+                        <p class="menu-name">Mee Curry</p>
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="bottom-nav">
+                <a href="home.html" class="nav-item">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">Home</span>
+                </a>
+                <a href="deals.html" class="nav-item">
+                    <span class="nav-icon">🏷️</span>
+                    <span class="nav-label">Deals</span>
+                </a>
+                <a href="meals.html" class="nav-item active">
+                    <span class="nav-icon">🍽️</span>
+                    <span class="nav-label">Menu</span>
+                </a>
+                <a href="cart.html" class="nav-item">
+                    <span class="nav-icon">🛒</span>
+                    <span class="nav-label">Cart</span>
+                </a>
+                <a href="profile.html" class="nav-item">
+                    <span class="nav-icon">👤</span>
+                    <span class="nav-label">You</span>
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <script>
+    // Protect page: only logged-in users allowed
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
+    if (!loggedInUser) {
+        // Not logged in → redirect
+        window.location.href = "login.html";
+    }
+</script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const searchInput = document.querySelector(".search-input");
+        const menuGrid = document.querySelector(".menu-grid");
+        const menuCards = menuGrid.querySelectorAll(".menu-card");
+
+        searchInput.addEventListener("input", () => {
+            const query = searchInput.value.toLowerCase();
+            let foundAny = false;
+
+            menuCards.forEach(card => {
+                const nameElement = card.querySelector(".menu-name");
+                const originalText = nameElement.textContent;
+const nameText = originalText.toLowerCase();
+
+                // Reset highlight
+                nameElement.innerHTML = nameElement.textContent;
+
+                if (nameText.includes(query)) {
+                    card.style.display = "block";
+                    foundAny = true;
+
+                    // highlight matched text
+                    if (query !== "") {
+    const regex = new RegExp(`(${query})`, "gi");
+    nameElement.innerHTML = originalText.replace(regex, "<span class='highlight'>$1</span>");
+}
+                } else {
+                    card.style.display = "none";
+                }
+            });
+
+            // Handle "No results found"
+            let noResult = document.querySelector(".no-result");
+            if (!foundAny && query !== "") {
+                if (!noResult) {
+                    noResult = document.createElement("div");
+                    noResult.className = "no-result";
+                    noResult.textContent = "No results found";
+                    menuGrid.appendChild(noResult);
+                }
+            } else if (noResult) {
+                noResult.remove();
+            }
+        });
+    });
+    </script>
+<div id="menuModal" class="modal">
+    <div class="modal-content">
+        
+        <span class="close" onclick="closeMenu()">&times;</span>
+
+        <img id="modalImg">
+        <h2 id="modalName"></h2>
+        <p id="modalPrice"></p>
+
+        <div class="quantity-box">
+            <button onclick="changeQty(-1)">−</button>
+            <span id="qty">1</span>
+            <button onclick="changeQty(1)">+</button>
+        </div>
+
+        <button class="add-btn" onclick="addToCart()">Add to Cart 🛒</button>
+        
+        <button class="add-btn" onclick="addToFavorites()">⭐ Add to Favorites</button>
+
+    </div>
+
+<script>
+function addToFavorites() {
+    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+
+    // Avoid duplicates
+    const exists = favorites.some(item => item.name === selectedItem.name);
+    if (!exists) {
+        favorites.push({
+            name: selectedItem.name,
+            image: selectedItem.image,
+            price: selectedItem.price
+        });
+        localStorage.setItem("favorites", JSON.stringify(favorites));
+
+        // Trigger a custom event for live update
+        window.dispatchEvent(new Event("favoritesUpdated"));
+    }
+
+    closeMenu(); // close the modal
+}
+</script>
+
+   <script>
+    let selectedItem = {};
+    let quantity = 1;
+
+    function openMenu(name, image, price) {
+        document.getElementById("modalName").textContent = name;
+        document.getElementById("modalImg").src = image;
+        document.getElementById("modalPrice").textContent = "BND " + price.toFixed(2);
+        quantity = 1;
+        document.getElementById("qty").textContent = 1;
+        selectedItem = { name, image, price };
+        document.getElementById("menuModal").style.display = "flex";
+    }
+
+    function closeMenu() {
+        document.getElementById("menuModal").style.display = "none";
+    }
+
+    function changeQty(val) {
+        quantity += val;
+        if (quantity < 1) quantity = 1;
+        document.getElementById("qty").textContent = quantity;
+    }
+
+    function addToCart() {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        let existing = cart.find(item => item.name === selectedItem.name);
+        if (existing) {
+            existing.qty += quantity;
+        } else {
+            cart.push({
+                name: selectedItem.name,
+                image: selectedItem.image,
+                price: selectedItem.price,
+                qty: quantity
+            });
+        }
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartCount();
+        closeMenu();
+        // Optional: show success message here
+    }
+
+    function updateCartCount() {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        let total = cart.reduce((sum, item) => sum + item.qty, 0);
+        let cartCountEl = document.getElementById("cartCount");
+        if (cartCountEl) cartCountEl.textContent = total;
+    }
+
+    updateCartCount();
+    </script>
+
+</body>
+</html>
+</body>
+</html>

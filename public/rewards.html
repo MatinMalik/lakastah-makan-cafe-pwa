@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Rewards - Lakastah Makan Cafe</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+
+</head>
+<body style="background-color: #f0f0f0;">
+  <div class="container" style="background-color: #f5f1e8;">
+    <div class="phone-frame" style="background-color: #f5f1e8;">
+      <div class="content with-nav">
+
+        <!-- Header -->
+        <div class="rewards-header">
+          <button class="back-btn" onclick="history.back()">←</button>
+          <h2 style="color:#2c2c2c;">🎁 My Rewards</h2>
+        </div>
+
+        <!-- Rewards Chart -->
+        <div class="rewards-chart" style="background-color:white;">
+          <h3>Points Earned Breakdown</h3>
+
+          <!-- Legend -->
+          <div class="chart-legend">
+            <span class="legend-item"><span class="dot yellow"></span> Basic Earned</span>
+            <span class="legend-item"><span class="dot cyan"></span> Purchased Points</span>
+            <span class="legend-item"><span class="dot green"></span> Invited Earned</span>
+            <span class="legend-item"><span class="dot orange"></span> Redeemed Points</span>
+            <span class="legend-item"><span class="dot blue"></span> On-Site Earned</span>
+          </div>
+
+          <!-- Bar Chart -->
+          <div class="bar-chart">
+            <div class="bar-group">
+              <div class="bar yellow" style="height:60px;"></div>
+              <div class="bar cyan" style="height:80px;"></div>
+              <span class="bar-label">Jan</span>
+            </div>
+            <div class="bar-group">
+              <div class="bar yellow" style="height:100px;"></div>
+              <div class="bar cyan" style="height:60px;"></div>
+              <span class="bar-label">Feb</span>
+            </div>
+            <div class="bar-group">
+              <div class="bar yellow" style="height:50px;"></div>
+              <div class="bar cyan" style="height:90px;"></div>
+              <span class="bar-label">Mar</span>
+            </div>
+            <div class="bar-group">
+              <div class="bar yellow" style="height:110px;"></div>
+              <div class="bar cyan" style="height:70px;"></div>
+              <span class="bar-label">Apr</span>
+            </div>
+          </div>
+
+          <!-- Points Summary -->
+          <div class="points-summary">
+            <div class="points-box yellow-bg">
+              <p>Total Earned</p>
+              <h3>41 pts</h3>
+            </div>
+            <div class="points-box cyan-bg">
+              <p>Total Redeemed</p>
+              <h3>21 pts</h3>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Navigation -->
+      <nav class="bottom-nav">
+                <a href="home.html" class="nav-item">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">Home</span>
+                </a>
+                <a href="deals.html" class="nav-item">
+                    <span class="nav-icon">🏷️</span>
+                    <span class="nav-label">Deals</span>
+                </a>
+                <a href="meals.html" class="nav-item">
+                    <span class="nav-icon">🍽️</span>
+                    <span class="nav-label">Menu</span>
+                </a>
+                <a href="cart.html" class="nav-item">
+                    <span class="nav-icon">🛒</span>
+                    <span class="nav-label">Cart</span>
+                </a>
+                <a href="profile.html" class="nav-item active">
+                    <span class="nav-icon">👤</span>
+                    <span class="nav-label">You</span>
+                </a>
+            </nav>
+
+    </div>
+  </div>
+<script>
+    // Protect page: only logged-in users allowed
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
+    if (!loggedInUser) {
+        // Not logged in → redirect
+        window.location.href = "login.html";
+    }
+</script>
+
+</body>
+</html>
+
+

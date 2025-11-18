@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Favourites - Lakastah Makan Cafe</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <button class="back-btn" onclick="history.back()">←</button>
+            <h2 class="page-title">⭐ Favourites</h2>
+        </div>
+
+        <!-- Favorites List -->
+        <div class="favorites-list"></div>
+
+<script>
+function loadFavorites() {
+    const list = document.querySelector(".favorites-list");
+    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+
+    list.innerHTML = ""; // Clear previous list
+
+    if (favorites.length === 0) {
+        list.innerHTML = "<p class='empty'>No favourites yet ⭐</p>";
+        return;
+    }
+
+    favorites.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "favorite-item";
+        row.innerHTML = `
+            <img src="${item.image}" class="favorite-img">
+            <div class="favorite-info">
+                <h3 class="favorite-name">${item.name}</h3>
+                <p class="favorite-price">$${item.price.toFixed(2)}</p>
+            </div>
+            <button class="remove-favorite" onclick="removeFavorite('${item.name}')">−</button>
+        `;
+        list.appendChild(row);
+    });
+}
+
+function removeFavorite(name) {
+    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    favorites = favorites.filter(item => item.name !== name);
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+    loadFavorites();
+}
+
+// Initial load
+document.addEventListener("DOMContentLoaded", loadFavorites);
+
+// Update favorites if localStorage changes (works if multiple tabs are open)
+window.addEventListener("storage", (e) => {
+    if (e.key === "favorites") loadFavorites();
+});
+</script>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+                <a href="home.html" class="nav-item">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">Home</span>
+                </a>
+                <a href="deals.html" class="nav-item">
+                    <span class="nav-icon">🏷️</span>
+                    <span class="nav-label">Deals</span>
+                </a>
+                <a href="meals.html" class="nav-item">
+                    <span class="nav-icon">🍽️</span>
+                    <span class="nav-label">Menu</span>
+                </a>
+                <a href="cart.html" class="nav-item">
+                    <span class="nav-icon">🛒</span>
+                    <span class="nav-label">Cart</span>
+                </a>
+                <a href="profile.html" class="nav-item active">
+                    <span class="nav-icon">👤</span>
+                    <span class="nav-label">You</span>
+                </a>
+            </nav>
+    </div>
+    <script>
+
+function removeFavorite(name) {
+    let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    favorites = favorites.filter(item => item.name !== name);
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+    loadFavorites();
+}
+</script>
+
+    <script>
+    // Protect page: only logged-in users allowed
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
+    if (!loggedInUser) {
+        // Not logged in → redirect
+        window.location.href = "login.html";
+    }
+</script>
+
+</body>
+</html>
