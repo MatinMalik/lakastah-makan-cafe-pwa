@@ -179,6 +179,12 @@ document.getElementById('confirmPaymentBtn').addEventListener('click', () => {
     };
     localStorage.setItem("receipt", JSON.stringify(receipt));
 
+    // ====== PAST RECEIPTS ======
+    let pastReceipts = JSON.parse(localStorage.getItem('pastReceipts')) || [];
+    pastReceipts.push(receipt);
+    localStorage.setItem('pastReceipts', JSON.stringify(pastReceipts));
+    // =====================
+
     // Clear cart & payment data
     localStorage.removeItem("cart");
     localStorage.removeItem("paymentData");
