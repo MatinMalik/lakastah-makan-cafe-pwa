@@ -10,6 +10,27 @@
 
     <style>/* Back Button */
 .back-btn { font-size: 24px; cursor: pointer; margin-bottom: 12px; display: inline-block; }
+
+.toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 0.8rem 1.5rem;
+    border-radius: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 9999;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
 </style>
     
 </head>
@@ -43,6 +64,9 @@
             </div>
         </div>
     </div>
+
+    <div class="toast" id="toast">Message</div>
+
     <script>
 function handleLogin(event){
     event.preventDefault();
@@ -54,14 +78,30 @@ function handleLogin(event){
 
     const user = users.find(u => u.email===email && u.password===password);
 
-    if(!user){
-        alert("Incorrect email or password");
-        return;
-    }
 
-    localStorage.setItem("loggedInUser", JSON.stringify(user));
-    alert("Login successful! Redirecting to home...");
+    function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2000);
+}
+
+
+    if (!user) {
+    showToast("Incorrect email or password");
+    return;
+}
+
+    localStorage.setItem("currentUser", JSON.stringify(user));
+
+showToast("Login successful! Redirecting...");
+
+setTimeout(() => {
     window.location.href = "home.html";
+}, 1500);
 }
 
 // Show/Hide Password
