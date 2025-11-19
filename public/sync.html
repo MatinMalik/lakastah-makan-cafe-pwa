@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Lakastah Data Sync</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; }
+    textarea { width: 100%; min-height: 120px; margin: 8px 0; }
+    button { padding: 8px 14px; margin: 4px 0; cursor: pointer; }
+    .box { border: 1px solid #ccc; padding: 10px; margin-bottom: 16px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Lakastah – Data Sync</h1>
+
+  <div class="box">
+    <h3>1. Export data from this device</h3>
+    <p>Tap the button, then copy the text below and send it to the other device.</p>
+    <button onclick="exportData()">Export LocalStorage</button>
+    <textarea id="exportBox" readonly placeholder="Exported data will appear here..."></textarea>
+  </div>
+
+  <div class="box">
+    <h3>2. Import data into this device</h3>
+    <p>Paste the text you received from the other device, then press Import.</p>
+    <textarea id="importBox" placeholder="Paste data from the other device here..."></textarea>
+    <button onclick="importData()">Import LocalStorage</button>
+  </div>
+
+  <script>
+    // 🔑 CHANGE these keys to match the ones you use in your JS
+    const KEYS = [
+      "users",
+      "menu",           // example: menu items
+      "orders",         // example: order list
+   // example: admin data
+    ];
+
+    // Export selected keys from localStorage into JSON string
+    function exportData() {
+      const data = {};
+      KEYS.forEach(key => {
+        const value = localStorage.getItem(key);
+        if (value !== null) {
+          data[key] = value;
+        }
+      });
+
+      const json = JSON.stringify(data);
+      document.getElementById("exportBox").value = json || "{}";
+      alert("Data exported. Copy the text and send it to the other device.");
+    }
+
+    // Import JSON string and save into localStorage
+    function importData() {
+      const text = document.getElementById("importBox").value.trim();
+      if (!text) {
+        alert("Please paste some data first.");
+        return;
+      }
+      try {
+        const data = JSON.parse(text);
+        Object.keys(data).forEach(key => {
+          localStorage.setItem(key, data[key]);
+        });
+        alert("Import complete! Data saved into localStorage for this device.");
+      } catch (e) {
+        console.error(e);
+        alert("Data is not valid JSON. Make sure you copied it correctly.");
+      }
+    }
+  </script>
+</body>
+</html>
